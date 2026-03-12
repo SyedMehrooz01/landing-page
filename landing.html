@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mahfil Pro — Event Management Agency</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-dark: #8B6914;
+    --deep: #0D0D0D;
+    --dark: #141414;
+    --panel: #1A1A1A;
+    --border: rgba(201,168,76,0.18);
+    --text: #F0EBE0;
+    --muted: #888880;
+    --white: #FAF8F3;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--deep);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed; width: 10px; height: 10px;
+    background: var(--gold); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transition: transform 0.15s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1px solid var(--gold-light); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transition: transform 0.4s ease, opacity 0.3s;
+    opacity: 0.5;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 60px;
+    background: linear-gradient(to bottom, rgba(13,13,13,0.95) 0%, transparent 100%);
+    backdrop-filter: blur(2px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  nav.scrolled {
+    background: rgba(13,13,13,0.97);
+    border-color: var(--border);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--gold);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--white); }
+  .nav-links {
+    display: flex; gap: 40px; list-style: none;
+  }
+  .nav-links a {
+    text-decoration: none; color: var(--muted);
+    font-size: 0.8rem; letter-spacing: 0.12em;
+    text-transform: uppercase; font-weight: 400;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold-light); }
+  .nav-cta {
+    padding: 10px 28px;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: transparent;
+    cursor: none;
+    transition: all 0.3s;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    text-decoration: none;
+  }
+  .nav-cta:hover {
+    background: var(--gold);
+    color: var(--deep);
+  }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex; align-items: center;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 60% at 70% 50%, rgba(201,168,76,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 80% at 20% 80%, rgba(201,168,76,0.04) 0%, transparent 70%),
+      var(--deep);
+  }
+  .hero-lines {
+    position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+  }
+  .hero-lines svg { width: 100%; height: 100%; opacity: 0.06; }
+  .hero-content {
+    position: relative; z-index: 2;
+    padding: 160px 60px 100px;
+    max-width: 780px;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 32px;
+    opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-tag::before {
+    content: ''; display: block;
+    width: 36px; height: 1px; background: var(--gold);
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 7vw, 6.5rem);
+    font-weight: 300;
+    line-height: 1.0;
+    letter-spacing: -0.01em;
+    color: var(--white);
+    margin-bottom: 32px;
+    opacity: 0; animation: fadeUp 0.9s 0.35s forwards;
+  }
+  h1 em {
+    font-style: italic; color: var(--gold);
+    font-weight: 300;
+  }
+  .hero-desc {
+    font-size: 1rem; line-height: 1.8;
+    color: var(--muted); max-width: 500px;
+    margin-bottom: 52px;
+    opacity: 0; animation: fadeUp 0.9s 0.5s forwards;
+  }
+  .hero-actions {
+    display: flex; align-items: center; gap: 32px;
+    opacity: 0; animation: fadeUp 0.9s 0.65s forwards;
+  }
+  .btn-primary {
+    padding: 16px 44px;
+    background: var(--gold);
+    color: var(--deep);
+    font-size: 0.8rem; letter-spacing: 0.14em;
+    text-transform: uppercase; font-weight: 600;
+    border: none; cursor: none;
+    transition: all 0.3s;
+    font-family: 'DM Sans', sans-serif;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+  .btn-ghost {
+    font-size: 0.78rem; color: var(--muted);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    text-decoration: none; display: inline-flex;
+    align-items: center; gap: 10px;
+    transition: color 0.3s;
+  }
+  .btn-ghost::after { content: '→'; transition: transform 0.3s; }
+  .btn-ghost:hover { color: var(--gold-light); }
+  .btn-ghost:hover::after { transform: translateX(4px); }
+
+  .hero-stats {
+    position: absolute; right: 60px; bottom: 80px;
+    display: flex; gap: 60px; z-index: 2;
+    opacity: 0; animation: fadeIn 1s 1s forwards;
+  }
+  .stat-item { text-align: right; }
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem; font-weight: 300;
+    color: var(--gold); line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.68rem; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--muted); margin-top: 6px;
+  }
+  .hero-scroll {
+    position: absolute; bottom: 40px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    opacity: 0; animation: fadeIn 1s 1.3s forwards;
+  }
+  .hero-scroll span {
+    font-size: 0.65rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .scroll-line {
+    width: 1px; height: 60px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollPulse 2s infinite;
+  }
+
+  /* MARQUEE */
+  .marquee-wrap {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden; padding: 18px 0;
+    background: var(--panel);
+  }
+  .marquee-track {
+    display: flex; gap: 0;
+    animation: marquee 25s linear infinite;
+    white-space: nowrap;
+  }
+  .marquee-item {
+    display: inline-flex; align-items: center; gap: 24px;
+    padding: 0 36px;
+    font-size: 0.7rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--muted);
+    border-right: 1px solid var(--border);
+  }
+  .marquee-item .dot { color: var(--gold); font-size: 1rem; }
+
+  /* SECTIONS */
+  section { padding: 120px 60px; }
+
+  .section-label {
+    font-size: 0.68rem; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--gold);
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 24px;
+  }
+  .section-label::before {
+    content: ''; width: 28px; height: 1px; background: var(--gold);
+  }
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 300; color: var(--white);
+    line-height: 1.1; letter-spacing: -0.01em;
+    margin-bottom: 20px;
+  }
+  h2 em { font-style: italic; color: var(--gold); }
+
+  /* ABOUT / INTRO */
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 100px; align-items: center;
+  }
+  .about-visual {
+    position: relative;
+  }
+  .about-img-frame {
+    width: 100%; aspect-ratio: 3/4;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .about-img-pattern {
+    position: absolute; inset: 0;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        transparent, transparent 40px,
+        rgba(201,168,76,0.03) 40px, rgba(201,168,76,0.03) 41px
+      );
+  }
+  .about-img-content {
+    position: relative; z-index: 1;
+    text-align: center;
+  }
+  .about-ornament {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 8rem; font-weight: 300;
+    color: rgba(201,168,76,0.12);
+    line-height: 1; display: block;
+  }
+  .about-badge {
+    position: absolute; bottom: -20px; right: -20px;
+    width: 140px; height: 140px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 4px;
+  }
+  .about-badge .num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.8rem; font-weight: 600;
+    color: var(--deep); line-height: 1;
+  }
+  .about-badge .lbl {
+    font-size: 0.6rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--dark);
+    text-align: center; line-height: 1.4; padding: 0 12px;
+  }
+  .about-text p {
+    color: var(--muted); line-height: 1.9;
+    font-size: 0.95rem; margin-bottom: 20px;
+  }
+  .about-features {
+    margin-top: 40px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .about-feat {
+    padding: 20px; border: 1px solid var(--border);
+    background: var(--panel);
+  }
+  .about-feat-icon {
+    font-size: 1.4rem; margin-bottom: 10px;
+  }
+  .about-feat h4 {
+    font-size: 0.82rem; font-weight: 500;
+    color: var(--white); margin-bottom: 6px;
+    letter-spacing: 0.04em;
+  }
+  .about-feat p {
+    font-size: 0.75rem; color: var(--muted);
+    line-height: 1.6; margin: 0;
+  }
+
+  /* SERVICES */
+  .services { background: var(--panel); }
+  .services-header {
+    display: flex; justify-content: space-between;
+    align-items: flex-end; margin-bottom: 80px;
+  }
+  .services-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  .service-card {
+    background: var(--dark);
+    padding: 52px 40px;
+    border: 1px solid var(--border);
+    transition: all 0.4s;
+    cursor: none; position: relative; overflow: hidden;
+    group: true;
+  }
+  .service-card::before {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--gold);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.4s;
+  }
+  .service-card:hover::before { transform: scaleX(1); }
+  .service-card:hover { background: #1C1C1C; transform: translateY(-4px); }
+  .service-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4rem; font-weight: 300;
+    color: rgba(201,168,76,0.1);
+    line-height: 1; margin-bottom: 32px;
+    transition: color 0.4s;
+  }
+  .service-card:hover .service-num { color: rgba(201,168,76,0.2); }
+  .service-icon { font-size: 1.8rem; margin-bottom: 20px; }
+  .service-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem; font-weight: 400;
+    color: var(--white); margin-bottom: 16px;
+  }
+  .service-card p {
+    font-size: 0.83rem; color: var(--muted);
+    line-height: 1.8;
+  }
+  .service-tags {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 24px;
+  }
+  .service-tag {
+    font-size: 0.65rem; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  /* MODULES SHOWCASE */
+  .modules { background: var(--deep); }
+  .modules-header { text-align: center; margin-bottom: 80px; }
+  .modules-header p {
+    color: var(--muted); max-width: 520px; margin: 20px auto 0;
+    font-size: 0.92rem; line-height: 1.8;
+  }
+  .modules-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .module-tile {
+    background: var(--dark);
+    padding: 40px 28px;
+    text-align: center;
+    cursor: none;
+    transition: all 0.35s;
+    position: relative;
+  }
+  .module-tile:hover {
+    background: var(--panel);
+    z-index: 2;
+    box-shadow: 0 0 40px rgba(201,168,76,0.08);
+  }
+  .module-tile:hover .module-tile-icon { transform: scale(1.15); color: var(--gold); }
+  .module-tile-icon {
+    font-size: 2.2rem; margin-bottom: 16px;
+    transition: all 0.3s;
+    color: var(--muted);
+    display: block;
+  }
+  .module-tile h4 {
+    font-size: 0.78rem; font-weight: 500;
+    color: var(--white); letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+  .module-tile p {
+    font-size: 0.7rem; color: var(--muted);
+    line-height: 1.65;
+  }
+  .module-tile .coming-tag {
+    display: inline-block; margin-top: 14px;
+    font-size: 0.6rem; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--gold);
+    border: 1px solid var(--gold-dark);
+    padding: 3px 10px;
+  }
+
+  /* PROCESS */
+  .process { background: var(--panel); }
+  .process-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 0; margin-top: 72px;
+    position: relative;
+  }
+  .process-grid::after {
+    content: '';
+    position: absolute; top: 28px; left: 10%; right: 10%;
+    height: 1px; background: var(--border);
+    z-index: 0;
+  }
+  .process-step {
+    padding: 0 24px; text-align: center; position: relative; z-index: 1;
+  }
+  .step-circle {
+    width: 56px; height: 56px; border-radius: 50%;
+    border: 1px solid var(--gold);
+    background: var(--panel);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 28px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem; font-weight: 400;
+    color: var(--gold);
+  }
+  .process-step h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem; font-weight: 400;
+    color: var(--white); margin-bottom: 12px;
+  }
+  .process-step p {
+    font-size: 0.78rem; color: var(--muted); line-height: 1.7;
+  }
+
+  /* TESTIMONIALS */
+  .testimonials { background: var(--deep); overflow: hidden; }
+  .testimonials-header { margin-bottom: 64px; }
+  .testimonials-track {
+    display: flex; gap: 32px;
+    animation: marquee 30s linear infinite;
+  }
+  .testimonial-card {
+    min-width: 400px; padding: 40px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .stars { color: var(--gold); font-size: 0.9rem; margin-bottom: 20px; }
+  .testimonial-card blockquote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem; font-weight: 300;
+    color: var(--white); line-height: 1.6;
+    margin-bottom: 24px; font-style: italic;
+  }
+  .testimonial-author {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .author-av {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 0.9rem; color: var(--deep);
+  }
+  .author-name {
+    font-size: 0.82rem; font-weight: 500; color: var(--white);
+  }
+  .author-role {
+    font-size: 0.7rem; color: var(--muted); margin-top: 2px;
+  }
+
+  /* CTA BANNER */
+  .cta-banner {
+    padding: 120px 60px;
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .cta-banner::before {
+    content: '';
+    position: absolute; top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at center, rgba(201,168,76,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .cta-banner h2 { margin-bottom: 20px; }
+  .cta-banner p {
+    color: var(--muted); font-size: 0.95rem;
+    max-width: 480px; margin: 0 auto 48px; line-height: 1.8;
+  }
+  .cta-actions { display: flex; gap: 20px; justify-content: center; }
+  .btn-outline {
+    padding: 16px 44px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.8rem; letter-spacing: 0.14em;
+    text-transform: uppercase; background: transparent;
+    cursor: none; transition: all 0.3s;
+    font-family: 'DM Sans', sans-serif;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* FOOTER */
+  footer {
+    padding: 72px 60px 40px;
+    background: var(--deep);
+    border-top: 1px solid var(--border);
+  }
+  .footer-grid {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px; margin-bottom: 64px;
+  }
+  .footer-brand .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem; font-weight: 600;
+    color: var(--gold); margin-bottom: 20px; display: block;
+  }
+  .footer-brand .logo span { color: var(--white); }
+  .footer-brand p {
+    font-size: 0.82rem; color: var(--muted);
+    line-height: 1.8; max-width: 280px;
+  }
+  .footer-socials {
+    display: flex; gap: 12px; margin-top: 28px;
+  }
+  .social-btn {
+    width: 38px; height: 38px; border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 0.85rem;
+    transition: all 0.3s; text-decoration: none;
+  }
+  .social-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .footer-col h5 {
+    font-size: 0.7rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 24px; font-weight: 500;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 14px; }
+  .footer-col a {
+    font-size: 0.82rem; color: var(--muted);
+    text-decoration: none; transition: color 0.3s;
+  }
+  .footer-col a:hover { color: var(--gold-light); }
+  .footer-bottom {
+    padding-top: 36px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-bottom p {
+    font-size: 0.73rem; color: var(--muted); letter-spacing: 0.06em;
+  }
+  .footer-bottom-links { display: flex; gap: 28px; }
+  .footer-bottom-links a {
+    font-size: 0.7rem; color: var(--muted); text-decoration: none;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .footer-bottom-links a:hover { color: var(--gold); }
+
+  /* DIVIDER */
+  .gold-divider {
+    width: 60px; height: 1px;
+    background: var(--gold); margin: 28px 0;
+  }
+
+  /* KEYFRAMES */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
+  }
+
+  /* REVEAL ON SCROLL */
+  .reveal {
+    opacity: 0; transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">Mahfil<span>Pro</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#platform">Platform</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Book a Consultation</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-lines">
+    <svg viewBox="0 0 1400 800" preserveAspectRatio="none">
+      <defs>
+        <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse">
+          <path d="M 80 0 L 0 0 0 80" fill="none" stroke="rgba(201,168,76,1)" stroke-width="0.5"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid)"/>
+    </svg>
+  </div>
+  <div class="hero-content">
+    <div class="hero-tag">Pakistan's Premier Event Management</div>
+    <h1>Where Every<br>Event Becomes<br><em>Legendary</em></h1>
+    <p class="hero-desc">
+      From intimate corporate gatherings to grand weddings and cultural celebrations — we craft experiences that leave lasting impressions across Pakistan.
+    </p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">Start Planning</a>
+      <a href="#services" class="btn-ghost">Explore Services</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">500+</div>
+      <div class="stat-label">Events Delivered</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">12+</div>
+      <div class="stat-label">Years of Excellence</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">50+</div>
+      <div class="stat-label">Venue Partners</div>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marqueeTrack">
+    <span class="marquee-item"><span class="dot">✦</span> Corporate Events</span>
+    <span class="marquee-item"><span class="dot">✦</span> Wedding Planning</span>
+    <span class="marquee-item"><span class="dot">✦</span> Cultural Celebrations</span>
+    <span class="marquee-item"><span class="dot">✦</span> Conference Management</span>
+    <span class="marquee-item"><span class="dot">✦</span> Product Launches</span>
+    <span class="marquee-item"><span class="dot">✦</span> Mehendi & Baraat</span>
+    <span class="marquee-item"><span class="dot">✦</span> Gala Dinners</span>
+    <span class="marquee-item"><span class="dot">✦</span> Award Ceremonies</span>
+    <span class="marquee-item"><span class="dot">✦</span> Government Events</span>
+    <span class="marquee-item"><span class="dot">✦</span> Corporate Events</span>
+    <span class="marquee-item"><span class="dot">✦</span> Wedding Planning</span>
+    <span class="marquee-item"><span class="dot">✦</span> Cultural Celebrations</span>
+    <span class="marquee-item"><span class="dot">✦</span> Conference Management</span>
+    <span class="marquee-item"><span class="dot">✦</span> Product Launches</span>
+    <span class="marquee-item"><span class="dot">✦</span> Mehendi & Baraat</span>
+    <span class="marquee-item"><span class="dot">✦</span> Gala Dinners</span>
+    <span class="marquee-item"><span class="dot">✦</span> Award Ceremonies</span>
+    <span class="marquee-item"><span class="dot">✦</span> Government Events</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about" style="background: var(--deep);">
+  <div class="about-grid">
+    <div class="about-visual reveal">
+      <div class="about-img-frame">
+        <div class="about-img-pattern"></div>
+        <div class="about-img-content">
+          <span class="about-ornament">م</span>
+          <p style="color:var(--gold); font-size:0.75rem; letter-spacing:0.2em; text-transform:uppercase; margin-top:12px;">Since 2012</p>
+        </div>
+      </div>
+      <div class="about-badge">
+        <span class="num">98%</span>
+        <span class="lbl">Client Satisfaction Rate</span>
+      </div>
+    </div>
+    <div class="about-text">
+      <div class="section-label reveal">Our Story</div>
+      <h2 class="reveal">Crafting Memories<br><em>Across Pakistan</em></h2>
+      <div class="gold-divider reveal"></div>
+      <p class="reveal">We are a full-service event management agency headquartered in Karachi, serving clients across Lahore, Islamabad, and beyond. Our team of dedicated professionals brings creativity, precision, and passion to every occasion.</p>
+      <p class="reveal reveal-delay-1">From managing complex logistics to curating bespoke experiences, we handle every detail so you can be fully present in your most important moments.</p>
+      <div class="about-features">
+        <div class="about-feat reveal reveal-delay-1">
+          <div class="about-feat-icon">🎯</div>
+          <h4>Precision Planning</h4>
+          <p>Every event meticulously planned with our advanced booking and scheduling system.</p>
+        </div>
+        <div class="about-feat reveal reveal-delay-2">
+          <div class="about-feat-icon">💎</div>
+          <h4>Premium Venues</h4>
+          <p>Exclusive partnerships with 50+ top-tier venues across major Pakistani cities.</p>
+        </div>
+        <div class="about-feat reveal reveal-delay-3">
+          <div class="about-feat-icon">👨‍🍳</div>
+          <h4>Expert Catering</h4>
+          <p>World-class culinary teams with comprehensive menu management capabilities.</p>
+        </div>
+        <div class="about-feat reveal reveal-delay-4">
+          <div class="about-feat-icon">📊</div>
+          <h4>Full Transparency</h4>
+          <p>Real-time financial reporting and complete event tracking from start to finish.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services" class="services">
+  <div class="services-header">
+    <div>
+      <div class="section-label reveal">What We Do</div>
+      <h2 class="reveal">Our <em>Services</em></h2>
+    </div>
+    <p class="reveal" style="color:var(--muted); max-width:300px; font-size:0.85rem; line-height:1.8;">
+      End-to-end event management tailored for every occasion and scale.
+    </p>
+  </div>
+  <div class="services-grid">
+    <div class="service-card reveal">
+      <div class="service-num">01</div>
+      <div class="service-icon">💍</div>
+      <h3>Weddings & Shaadis</h3>
+      <p>Complete wedding planning from Mehndi to Walima. We handle every tradition, every detail, every memory.</p>
+      <div class="service-tags">
+        <span class="service-tag">Baraat</span>
+        <span class="service-tag">Mehndi</span>
+        <span class="service-tag">Walima</span>
+        <span class="service-tag">Decor</span>
+      </div>
+    </div>
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-num">02</div>
+      <div class="service-icon">🏢</div>
+      <h3>Corporate Events</h3>
+      <p>Conferences, product launches, award ceremonies, and AGMs executed with corporate-grade precision.</p>
+      <div class="service-tags">
+        <span class="service-tag">Conferences</span>
+        <span class="service-tag">Launches</span>
+        <span class="service-tag">Seminars</span>
+      </div>
+    </div>
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-num">03</div>
+      <div class="service-icon">🎪</div>
+      <h3>Cultural & Social</h3>
+      <p>Eid gatherings, melas, charity galas, and cultural festivals that celebrate Pakistan's rich heritage.</p>
+      <div class="service-tags">
+        <span class="service-tag">Festivals</span>
+        <span class="service-tag">Galas</span>
+        <span class="service-tag">Charity</span>
+      </div>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-num">04</div>
+      <div class="service-icon">🍽️</div>
+      <h3>Catering & Kitchen</h3>
+      <p>From traditional Pakistani cuisine to international menus — managed by our expert culinary operations team.</p>
+      <div class="service-tags">
+        <span class="service-tag">Custom Menus</span>
+        <span class="service-tag">Buffet</span>
+        <span class="service-tag">Live Stations</span>
+      </div>
+    </div>
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-num">05</div>
+      <div class="service-icon">🎨</div>
+      <h3>Decor & Production</h3>
+      <p>Floral design, lighting, staging, AV production, and complete venue transformation.</p>
+      <div class="service-tags">
+        <span class="service-tag">Florals</span>
+        <span class="service-tag">Lighting</span>
+        <span class="service-tag">Stage & AV</span>
+      </div>
+    </div>
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-num">06</div>
+      <div class="service-icon">📋</div>
+      <h3>Venue Management</h3>
+      <p>Venue sourcing, booking coordination, and full on-site hall management for any capacity.</p>
+      <div class="service-tags">
+        <span class="service-tag">Hall Booking</span>
+        <span class="service-tag">Outdoor</span>
+        <span class="service-tag">Luxury Hotels</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLATFORM MODULES -->
+<section id="platform" class="modules">
+  <div class="modules-header">
+    <div class="section-label reveal" style="justify-content:center;">Our Platform</div>
+    <h2 class="reveal">Powered by an <em>Intelligent</em><br>Management System</h2>
+    <p class="reveal">Our proprietary platform integrates every aspect of event operations — from the first inquiry to the final payment — in one seamless system.</p>
+  </div>
+  <div class="modules-grid reveal">
+    <div class="module-tile">
+      <span class="module-tile-icon">📅</span>
+      <h4>Booking & Scheduling</h4>
+      <p>Dynamic calendar with daily, weekly & monthly views. Multi-venue tracking with live status management.</p>
+      <span class="coming-tag">Core Module</span>
+    </div>
+    <div class="module-tile">
+      <span class="module-tile-icon">💰</span>
+      <h4>Finance & Accounting</h4>
+      <p>Event-wise ledgers, advances, balance tracking, P&L reports, and multi-method payment logging.</p>
+      <span class="coming-tag">Core Module</span>
+    </div>
+    <div class="module-tile">
+      <span class="module-tile-icon">🍱</span>
+      <h4>Kitchen & Inventory</h4>
+      <p>Menu management, ingredient sheets, raw material tracking, and real-time stock control.</p>
+      <span class="coming-tag">Core Module</span>
+    </div>
+    <div class="module-tile">
+      <span class="module-tile-icon">👥</span>
+      <h4>HR & Staff Management</h4>
+      <p>Staff profiles, automated payroll, attendance logs, leave management, and role-based access.</p>
+      <span class="coming-tag">Core Module</span>
+    </div>
+    <div class="module-tile">
+      <span class="module-tile-icon">📈</span>
+      <h4>Reports & Analytics</h4>
+      <p>Monthly, yearly, and group-wise reports. Color-coded status dashboards and expense head tracking.</p>
+      <span class="coming-tag">Core Module</span>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process" class="process">
+  <div class="section-label reveal">How It Works</div>
+  <h2 class="reveal">Our <em>Process</em></h2>
+  <div class="process-grid">
+    <div class="process-step reveal">
+      <div class="step-circle">01</div>
+      <h4>Initial Consultation</h4>
+      <p>Share your vision, guest count, and budget. We'll propose a tailored event concept.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-1">
+      <div class="step-circle">02</div>
+      <h4>Planning & Booking</h4>
+      <p>Venue selection, vendor coordination, and a complete event timeline locked into our system.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-2">
+      <div class="step-circle">03</div>
+      <h4>Execution</h4>
+      <p>On-site management by our professional team ensuring every detail is flawlessly delivered.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-3">
+      <div class="step-circle">04</div>
+      <h4>Wrap-Up & Review</h4>
+      <p>Post-event reporting, financial reconciliation, and client satisfaction review.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" style="padding-bottom: 0; overflow:hidden;">
+  <div class="testimonials-header reveal">
+    <div class="section-label">Client Voices</div>
+    <h2>What Our Clients <em>Say</em></h2>
+  </div>
+  <div style="overflow:hidden; padding-bottom: 80px; margin-top: 56px;">
+    <div class="testimonials-track" id="testimonialsTrack">
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"MahfilPro turned our daughter's wedding into something out of a dream. Every detail was perfect — from the decor to the catering."</blockquote>
+        <div class="testimonial-author">
+          <div class="author-av">SK</div>
+          <div>
+            <div class="author-name">Salman Khawaja</div>
+            <div class="author-role">Business Owner, Karachi</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"Our annual corporate conference was executed flawlessly. 400 guests, zero issues. Their team is exceptionally professional."</blockquote>
+        <div class="testimonial-author">
+          <div class="author-av">NA</div>
+          <div>
+            <div class="author-name">Nadia Awan</div>
+            <div class="author-role">Head of Marketing, TechCorp Lahore</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"Incredible attention to detail. They managed our product launch with precision and creativity we hadn't seen before."</blockquote>
+        <div class="testimonial-author">
+          <div class="author-av">FR</div>
+          <div>
+            <div class="author-name">Farhan Raza</div>
+            <div class="author-role">CEO, StartupHub Islamabad</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"The kitchen team was phenomenal. 600 guests, traditional menu, served hot and on time. Remarkable logistics."</blockquote>
+        <div class="testimonial-author">
+          <div class="author-av">ZM</div>
+          <div>
+            <div class="author-name">Zara Malik</div>
+            <div class="author-role">Event Host, Lahore</div>
+          </div>
+        </div>
+      </div>
+      <!-- Duplicate for infinite scroll -->
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"MahfilPro turned our daughter's wedding into something out of a dream. Every detail was perfect — from the decor to the catering."</blockquote>
+        <div class="testimonial-author">
+          <div class="author-av">SK</div>
+          <div>
+            <div class="author-name">Salman Khawaja</div>
+            <div class="author-role">Business Owner, Karachi</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"Our annual corporate conference was executed flawlessly. 400 guests, zero issues. Their team is exceptionally professional."</blockquote>
+        <div class="testimonial-author">
+          <div class="author-av">NA</div>
+          <div>
+            <div class="author-name">Nadia Awan</div>
+            <div class="author-role">Head of Marketing, TechCorp Lahore</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section id="contact" class="cta-banner">
+  <div class="section-label reveal" style="justify-content:center;">Get Started</div>
+  <h2 class="reveal">Ready to Plan Your<br><em>Next Event?</em></h2>
+  <p class="reveal">Let's bring your vision to life. Our team is ready to craft an unforgettable experience tailored to you.</p>
+  <div class="cta-actions reveal">
+    <a href="mailto:info@mahfilpro.pk" class="btn-primary">Book a Consultation</a>
+    <a href="tel:+922112345678" class="btn-outline">+92 21 1234 5678</a>
+  </div>
+  <div style="margin-top: 60px; display:flex; justify-content:center; gap:60px; flex-wrap:wrap;" class="reveal">
+    <div style="text-align:center;">
+      <div style="font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Headquarters</div>
+      <div style="font-size:0.88rem;color:var(--white);">Karachi, Sindh</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Also Serving</div>
+      <div style="font-size:0.88rem;color:var(--white);">Lahore · Islamabad · Rawalpindi</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Email</div>
+      <div style="font-size:0.88rem;color:var(--white);">info@mahfilpro.pk</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <span class="logo">Mahfil<span>Pro</span></span>
+      <p>Pakistan's leading event management agency. Transforming occasions into unforgettable experiences since 2012.</p>
+      <div class="footer-socials">
+        <a class="social-btn" href="#">in</a>
+        <a class="social-btn" href="#">tw</a>
+        <a class="social-btn" href="#">ig</a>
+        <a class="social-btn" href="#">fb</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h5>Services</h5>
+      <ul>
+        <li><a href="#">Weddings & Shaadis</a></li>
+        <li><a href="#">Corporate Events</a></li>
+        <li><a href="#">Cultural Events</a></li>
+        <li><a href="#">Catering</a></li>
+        <li><a href="#">Decor & Production</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Platform</h5>
+      <ul>
+        <li><a href="#">Booking Calendar</a></li>
+        <li><a href="#">Finance & Accounts</a></li>
+        <li><a href="#">Kitchen & Inventory</a></li>
+        <li><a href="#">HR Management</a></li>
+        <li><a href="#">Reports Dashboard</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Company</h5>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Our Team</a></li>
+        <li><a href="#">Venues</a></li>
+        <li><a href="#">Portfolio</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 MahfilPro Events. All rights reserved. Karachi, Pakistan.</p>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Sitemap</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx - 5 + 'px';
+    cursor.style.top = my - 5 + 'px';
+  });
+  function animRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx - 18 + 'px';
+    ring.style.top = ry - 18 + 'px';
+    requestAnimationFrame(animRing);
+  }
+  animRing();
+
+  // Sticky nav
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
